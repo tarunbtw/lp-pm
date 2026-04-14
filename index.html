@@ -1,0 +1,1508 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polymarket — Prediction Markets Explained</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1a1814;
+        --ink2: #4a4640;
+        --ink3: #8c8880;
+        --page: #f5f2ed;
+        --surface: #fffefb;
+        --surface2: #f0ece5;
+        --border: #e8e3db;
+        --border2: #d8d2c8;
+        --accent: #1a6b47;
+        --accent-light: #e8f4ee;
+        --accent2: #c94f1a;
+        --accent2-light: #fbeee8;
+        --blue: #1a4a8c;
+        --blue-light: #e8eef8;
+        --amber: #8c6a1a;
+        --amber-light: #f8f0e0;
+        --r: 14px;
+        --r-sm: 8px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Geist", sans-serif;
+        background: var(--page);
+        color: var(--ink);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* subtle grain texture */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        pointer-events: none;
+        opacity: 0.025;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        background-size: 180px;
+      }
+
+      /* ── ANIMATIONS ── */
+      @keyframes fadeup {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes scalein {
+        from {
+          opacity: 0;
+          transform: scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .a1 {
+        animation: fadeup 0.6s ease both;
+      }
+      .a2 {
+        animation: fadeup 0.6s 0.1s ease both;
+      }
+      .a3 {
+        animation: fadeup 0.6s 0.2s ease both;
+      }
+      .a4 {
+        animation: fadeup 0.6s 0.3s ease both;
+      }
+      .a5 {
+        animation: fadeup 0.6s 0.4s ease both;
+      }
+      .a6 {
+        animation: fadeup 0.6s 0.5s ease both;
+      }
+
+      /* ── LAYOUT ── */
+      .container {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+      .container-wide {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      section {
+        padding: 5rem 0;
+      }
+      section + section {
+        border-top: 1px solid var(--border);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        padding: 7rem 0 5rem;
+        background: var(--surface);
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to bottom, transparent, var(--page));
+        pointer-events: none;
+      }
+
+      /* decorative circle */
+      .hero-deco {
+        position: absolute;
+        right: -120px;
+        top: -80px;
+        width: 480px;
+        height: 480px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(26, 107, 71, 0.06) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .hero-deco2 {
+        position: absolute;
+        left: -60px;
+        bottom: -60px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(201, 79, 26, 0.05) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--accent-light);
+        border: 1px solid rgba(26, 107, 71, 0.2);
+        padding: 5px 12px;
+        border-radius: 99px;
+        margin-bottom: 1.8rem;
+      }
+      .hero-tag-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .hero h1 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(2.6rem, 6vw, 4.2rem);
+        font-weight: 400;
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 1.4rem;
+        max-width: 640px;
+      }
+      .hero h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+
+      .hero-sub {
+        font-size: 1.05rem;
+        font-weight: 300;
+        color: var(--ink2);
+        max-width: 520px;
+        line-height: 1.7;
+        margin-bottom: 2.4rem;
+      }
+
+      .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--ink);
+        color: var(--surface);
+        padding: 0.75rem 1.6rem;
+        border-radius: 99px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s,
+          background 0.15s;
+        letter-spacing: 0.01em;
+      }
+      .btn-primary:hover {
+        background: var(--ink2);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(26, 24, 20, 0.15);
+      }
+
+      .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: var(--ink2);
+        padding: 0.75rem 1.4rem;
+        border-radius: 99px;
+        font-size: 0.88rem;
+        font-weight: 400;
+        text-decoration: none;
+        border: 1px solid var(--border2);
+        transition:
+          border-color 0.15s,
+          color 0.15s,
+          background 0.15s;
+      }
+      .btn-ghost:hover {
+        border-color: var(--ink2);
+        color: var(--ink);
+        background: var(--surface2);
+      }
+
+      .hero-btns {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      /* ── STAT STRIP ── */
+      .stats {
+        background: var(--surface);
+        padding: 3rem 0;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0;
+      }
+      .stat {
+        padding: 1.4rem 2rem;
+        border-right: 1px solid var(--border);
+        text-align: center;
+      }
+      .stat:last-child {
+        border-right: none;
+      }
+      .stat-num {
+        font-family: "Instrument Serif", serif;
+        font-size: 2.2rem;
+        font-weight: 400;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      .stat-label {
+        font-size: 0.76rem;
+        color: var(--ink3);
+        font-weight: 400;
+        letter-spacing: 0.02em;
+      }
+
+      /* ── WHAT IS ── */
+      .what-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+      }
+      @media (max-width: 680px) {
+        .what-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .section-label {
+        font-size: 0.68rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ink3);
+        margin-bottom: 1rem;
+      }
+      .section-h {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+        font-weight: 400;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.2rem;
+      }
+      .section-h em {
+        font-style: italic;
+      }
+      .section-p {
+        font-size: 0.93rem;
+        color: var(--ink2);
+        line-height: 1.75;
+        font-weight: 300;
+      }
+      .section-p + .section-p {
+        margin-top: 0.8rem;
+      }
+
+      /* visual card */
+      .vis-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .vis-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(26, 107, 71, 0.03) 0%,
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+
+      .market-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0.85rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .market-row:last-child {
+        border-bottom: none;
+      }
+      .market-q {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--ink);
+        flex: 1;
+        line-height: 1.35;
+      }
+      .market-q small {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 400;
+        color: var(--ink3);
+        margin-top: 2px;
+      }
+
+      .prob {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 99px;
+        white-space: nowrap;
+      }
+      .prob-yes {
+        background: var(--accent-light);
+        color: var(--accent);
+      }
+      .prob-no {
+        background: var(--accent2-light);
+        color: var(--accent2);
+      }
+      .prob-mid {
+        background: var(--blue-light);
+        color: var(--blue);
+      }
+      .prob-amb {
+        background: var(--amber-light);
+        color: var(--amber);
+      }
+
+      /* ── HOW IT WORKS ── */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        overflow: hidden;
+      }
+      .step {
+        background: var(--surface);
+        padding: 2rem 1.6rem;
+        position: relative;
+      }
+      .step-num {
+        font-family: "Instrument Serif", serif;
+        font-size: 2.4rem;
+        font-weight: 400;
+        color: var(--border2);
+        line-height: 1;
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+      }
+      .step-title {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+      }
+      .step-desc {
+        font-size: 0.78rem;
+        color: var(--ink3);
+        line-height: 1.65;
+        font-weight: 300;
+      }
+
+      /* ── FEATURES ── */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+      }
+      .feat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 1.6rem;
+        transition:
+          border-color 0.15s,
+          transform 0.15s;
+      }
+      .feat:hover {
+        border-color: var(--border2);
+        transform: translateY(-2px);
+      }
+
+      .feat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 16px;
+      }
+      .feat-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+      }
+      .feat-desc {
+        font-size: 0.78rem;
+        color: var(--ink3);
+        line-height: 1.65;
+        font-weight: 300;
+      }
+
+      /* ── MARKETS ── */
+      .markets-intro {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 1.8rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .category-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+      .tab {
+        padding: 5px 14px;
+        border-radius: 99px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--ink3);
+        cursor: pointer;
+        transition: all 0.13s;
+        font-family: "Geist", sans-serif;
+      }
+      .tab:hover {
+        border-color: var(--border2);
+        color: var(--ink);
+      }
+      .tab.active {
+        background: var(--ink);
+        color: var(--surface);
+        border-color: var(--ink);
+      }
+
+      .market-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 12px;
+      }
+      .mcard {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r);
+        padding: 1.2rem 1.3rem;
+        transition:
+          border-color 0.15s,
+          transform 0.15s;
+      }
+      .mcard:hover {
+        border-color: var(--border2);
+        transform: translateY(-2px);
+      }
+      .mcard-cat {
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink3);
+        margin-bottom: 0.5rem;
+      }
+      .mcard-q {
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--ink);
+        line-height: 1.4;
+        margin-bottom: 1rem;
+      }
+      .mcard-bar {
+        height: 4px;
+        border-radius: 99px;
+        background: var(--surface2);
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .mcard-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: var(--accent);
+        transition: width 0.4s ease;
+      }
+      .mcard-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .mcard-prob {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent);
+      }
+      .mcard-vol {
+        font-size: 0.72rem;
+        color: var(--ink3);
+      }
+
+      /* ── FAQ ── */
+      .faqs {
+        max-width: 680px;
+        margin: 0 auto;
+      }
+      .faq {
+        border-bottom: 1px solid var(--border);
+        padding: 1.2rem 0;
+        cursor: pointer;
+      }
+      .faq-q {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: var(--ink);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        user-select: none;
+      }
+      .faq-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid var(--border2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 13px;
+        color: var(--ink3);
+        transition: transform 0.2s;
+      }
+      .faq.open .faq-icon {
+        transform: rotate(45deg);
+      }
+      .faq-a {
+        font-size: 0.82rem;
+        color: var(--ink2);
+        line-height: 1.7;
+        font-weight: 300;
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.3s ease,
+          padding 0.3s;
+      }
+      .faq.open .faq-a {
+        max-height: 200px;
+        padding-top: 0.75rem;
+      }
+
+      /* ── CTA ── */
+      .cta {
+        background: var(--ink);
+        border-radius: var(--r);
+        padding: 4rem 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin: 5rem 0;
+      }
+      .cta::before {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(26, 107, 71, 0.25),
+          transparent 70%
+        );
+        top: -150px;
+        left: -100px;
+        pointer-events: none;
+      }
+      .cta::after {
+        content: "";
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(201, 79, 26, 0.2),
+          transparent 70%
+        );
+        bottom: -100px;
+        right: -80px;
+        pointer-events: none;
+      }
+      .cta h2 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        font-weight: 400;
+        color: #f5f2ed;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.8rem;
+        position: relative;
+        z-index: 1;
+      }
+      .cta p {
+        font-size: 0.9rem;
+        color: rgba(245, 242, 237, 0.55);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 1;
+        font-weight: 300;
+      }
+      .cta-btns {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+      }
+      .btn-light {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f5f2ed;
+        color: var(--ink);
+        padding: 0.75rem 1.6rem;
+        border-radius: 99px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition:
+          transform 0.15s,
+          box-shadow 0.15s;
+      }
+      .btn-light:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      }
+      .btn-outline-light {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: transparent;
+        color: rgba(245, 242, 237, 0.7);
+        padding: 0.75rem 1.4rem;
+        border-radius: 99px;
+        font-size: 0.88rem;
+        font-weight: 400;
+        text-decoration: none;
+        border: 1px solid rgba(245, 242, 237, 0.2);
+        transition:
+          border-color 0.15s,
+          color 0.15s;
+      }
+      .btn-outline-light:hover {
+        border-color: rgba(245, 242, 237, 0.5);
+        color: #f5f2ed;
+      }
+
+      /* ── RISK ── */
+      .risk-box {
+        background: var(--amber-light);
+        border: 1px solid rgba(140, 106, 26, 0.2);
+        border-radius: var(--r);
+        padding: 1.4rem 1.6rem;
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+      .risk-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .risk-text {
+        font-size: 0.82rem;
+        color: var(--amber);
+        line-height: 1.65;
+        font-weight: 400;
+      }
+      .risk-text strong {
+        font-weight: 600;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2.5rem 0;
+        text-align: center;
+        font-size: 0.75rem;
+        color: var(--ink3);
+      }
+      footer a {
+        color: var(--ink2);
+        text-decoration: none;
+      }
+      footer a:hover {
+        color: var(--ink);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 600px) {
+        .stat {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .stat:last-child {
+          border-bottom: none;
+        }
+        section {
+          padding: 3.5rem 0;
+        }
+        .cta {
+          padding: 2.5rem 1.5rem;
+        }
+      }
+
+      /* scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--page);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 99px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── HERO ── -->
+    <section class="hero">
+      <div class="hero-deco"></div>
+      <div class="hero-deco2"></div>
+      <div class="container">
+        <div class="hero-tag a1">
+          <span class="hero-tag-dot"></span>
+          Prediction Markets
+        </div>
+        <h1 class="a2">
+          Bet on the <em>future.</em><br />Get paid to be right.
+        </h1>
+        <p class="hero-sub a3">
+          Polymarket is the world's largest prediction market platform — where
+          real money prices real-world outcomes, and the crowd is often smarter
+          than the experts.
+        </p>
+        <div class="hero-btns a4">
+          <a
+            href="https://polymarket.com"
+            target="_blank"
+            rel="noopener"
+            class="btn-primary"
+          >
+            Visit Polymarket
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 10L10 2M10 2H4M10 2V8"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a href="#what" class="btn-ghost">Learn how it works</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATS ── -->
+    <section class="stats a5">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-num">$1B+</div>
+            <div class="stat-label">Total volume traded</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">~500K</div>
+            <div class="stat-label">Active traders</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">1000+</div>
+            <div class="stat-label">Live markets</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">USDC</div>
+            <div class="stat-label">Settlement currency</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">2020</div>
+            <div class="stat-label">Founded</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WHAT IS ── -->
+    <section id="what">
+      <div class="container">
+        <div class="what-grid">
+          <div>
+            <p class="section-label">What is Polymarket</p>
+            <h2 class="section-h">A market for <em>every outcome</em></h2>
+            <p class="section-p">
+              Polymarket is a decentralized prediction market built on Polygon.
+              Anyone can buy shares in the outcome of real-world events —
+              elections, economics, sports, science, crypto, and more.
+            </p>
+            <p class="section-p">
+              Each market is a binary question. If you buy "Yes" shares and the
+              answer resolves Yes, your shares pay out $1 each. If you're wrong,
+              they're worth $0. The price at any moment reflects the market's
+              collective probability.
+            </p>
+            <p class="section-p" style="margin-top: 1rem">
+              It's not gambling in the traditional sense — it's information
+              aggregation. Prices here have predicted elections more accurately
+              than major pollsters.
+            </p>
+          </div>
+          <div class="vis-card">
+            <p
+              style="
+                font-size: 0.68rem;
+                font-weight: 500;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--ink3);
+                margin-bottom: 1rem;
+              "
+            >
+              Live market examples
+            </p>
+            <div class="market-row">
+              <div class="market-q">
+                Will the Fed cut rates in 2025?<small
+                  >Monetary Policy · $14.2M vol</small
+                >
+              </div>
+              <span class="prob prob-mid">61%</span>
+            </div>
+            <div class="market-row">
+              <div class="market-q">
+                Will Bitcoin reach $100K?<small>Crypto · $8.7M vol</small>
+              </div>
+              <span class="prob prob-yes">74%</span>
+            </div>
+            <div class="market-row">
+              <div class="market-q">
+                Next US recession before 2026?<small
+                  >Economics · $5.1M vol</small
+                >
+              </div>
+              <span class="prob prob-no">38%</span>
+            </div>
+            <div class="market-row">
+              <div class="market-q">
+                Will GPT-5 launch in 2025?<small>AI · $3.4M vol</small>
+              </div>
+              <span class="prob prob-amb">52%</span>
+            </div>
+            <div class="market-row">
+              <div class="market-q">
+                Will Apple release AR glasses?<small>Tech · $2.1M vol</small>
+              </div>
+              <span class="prob prob-no">29%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section id="how">
+      <div class="container">
+        <p class="section-label" style="text-align: center">How it works</p>
+        <h2 class="section-h" style="text-align: center; margin-bottom: 2.5rem">
+          Four steps to <em>trade the truth</em>
+        </h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-title">Connect your wallet</div>
+            <div class="step-desc">
+              Sign up with email or connect a crypto wallet (MetaMask, Coinbase,
+              etc.). Deposit USDC to fund your account — Polygon keeps gas fees
+              near zero.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-title">Pick a market</div>
+            <div class="step-desc">
+              Browse hundreds of open questions on politics, science, sports,
+              AI, and economics. Each shows the current probability price,
+              volume, and end date.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-title">Buy Yes or No</div>
+            <div class="step-desc">
+              Buy Yes shares if you think the probability is too low, or No
+              shares if you think it's too high. Your price is your implied
+              probability. Sell anytime before resolution.
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">04</div>
+            <div class="step-title">Collect your payout</div>
+            <div class="step-desc">
+              When the event happens, an oracle resolves the market. Correct
+              shares pay $1.00 each. Funds settle automatically to your wallet
+              in USDC.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FEATURES ── -->
+    <section id="features">
+      <div class="container">
+        <p class="section-label" style="text-align: center">Why Polymarket</p>
+        <h2 class="section-h" style="text-align: center; margin-bottom: 2.5rem">
+          Built for <em>serious participants</em>
+        </h2>
+        <div class="features-grid">
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--accent-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M8 1L10.5 6L16 6.75L12 10.5L13 16L8 13.25L3 16L4 10.5L0 6.75L5.5 6L8 1Z"
+                  fill="var(--accent)"
+                  opacity=".7"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Real money, real skin</div>
+            <div class="feat-desc">
+              Unlike polls or surveys, traders put actual capital on the line.
+              This makes prices genuinely informative — people research before
+              betting.
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--blue-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <rect
+                  x="1"
+                  y="8"
+                  width="3"
+                  height="7"
+                  rx="1"
+                  fill="var(--blue)"
+                  opacity=".7"
+                />
+                <rect
+                  x="6"
+                  y="5"
+                  width="3"
+                  height="10"
+                  rx="1"
+                  fill="var(--blue)"
+                  opacity=".7"
+                />
+                <rect
+                  x="11"
+                  y="2"
+                  width="3"
+                  height="13"
+                  rx="1"
+                  fill="var(--blue)"
+                  opacity=".7"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Deep liquidity</div>
+            <div class="feat-desc">
+              Major political and macro markets routinely exceed $50M in volume.
+              Tight spreads mean you enter and exit positions efficiently.
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--accent2-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M8 1a7 7 0 100 14A7 7 0 008 1zM8 4v5l3 3"
+                  stroke="var(--accent2)"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Anytime liquidity</div>
+            <div class="feat-desc">
+              You don't have to hold until resolution. Sell your position at any
+              time if the market moves in your favor — or to cut losses early.
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--amber-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M13 5L8 1 3 5v8a1 1 0 001 1h3v-4h2v4h3a1 1 0 001-1V5z"
+                  fill="var(--amber)"
+                  opacity=".7"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Non-custodial</div>
+            <div class="feat-desc">
+              Built on Polygon, your funds sit in smart contracts. Polymarket
+              never holds your money in a centralized pool — you keep custody
+              via your wallet.
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--accent-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle
+                  cx="5"
+                  cy="5"
+                  r="3"
+                  stroke="var(--accent)"
+                  stroke-width="1.4"
+                />
+                <circle
+                  cx="11"
+                  cy="11"
+                  r="3"
+                  stroke="var(--accent)"
+                  stroke-width="1.4"
+                />
+                <path
+                  d="M7.5 7.5l1 1"
+                  stroke="var(--accent)"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Transparent resolution</div>
+            <div class="feat-desc">
+              Markets resolve via UMA Protocol's optimistic oracle — a
+              decentralized dispute system where resolutions are publicly
+              verifiable on-chain.
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon" style="background: var(--blue-light)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path
+                  d="M2 8h12M8 2l6 6-6 6"
+                  stroke="var(--blue)"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </div>
+            <div class="feat-title">Near-zero fees</div>
+            <div class="feat-desc">
+              Polygon's L2 infrastructure means sub-cent gas fees. Polymarket
+              takes a small cut only on winning trades — no subscription, no
+              deposit fee.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SAMPLE MARKETS ── -->
+    <section id="markets">
+      <div class="container">
+        <div class="markets-intro">
+          <div>
+            <p class="section-label">Market categories</p>
+            <h2 class="section-h" style="margin-bottom: 0">
+              What you can <em>trade</em>
+            </h2>
+          </div>
+        </div>
+        <div class="category-tabs" id="tabs">
+          <button class="tab active" data-cat="all">All</button>
+          <button class="tab" data-cat="politics">Politics</button>
+          <button class="tab" data-cat="economics">Economics</button>
+          <button class="tab" data-cat="tech">Tech & AI</button>
+          <button class="tab" data-cat="crypto">Crypto</button>
+          <button class="tab" data-cat="science">Science</button>
+        </div>
+        <div class="market-cards" id="mkt-grid"></div>
+      </div>
+    </section>
+
+    <!-- ── RISK ── -->
+    <section>
+      <div class="container">
+        <div style="max-width: 680px; margin: 0 auto">
+          <p class="section-label">Important</p>
+          <h2 class="section-h" style="margin-bottom: 1.5rem">
+            Know the <em>risks</em>
+          </h2>
+          <div class="risk-box">
+            <span class="risk-icon">⚠</span>
+            <div class="risk-text">
+              <strong>Polymarket involves real financial risk.</strong> You can
+              lose the full amount you invest. Markets can be illiquid.
+              Resolution can be disputed. Polymarket is not available to US
+              residents. This page is informational only — not financial advice.
+              Always do your own research before trading.
+            </div>
+          </div>
+          <div style="margin-top: 1.5rem">
+            <p class="section-p">
+              Prediction markets are most useful as
+              <strong>information tools</strong>, not as a primary income
+              source. The crowd-sourced probabilities have a strong track record
+              in forecasting geopolitical and macro events — but individual bets
+              are still speculative.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <section id="faq">
+      <div class="container">
+        <p class="section-label" style="text-align: center">FAQ</p>
+        <h2 class="section-h" style="text-align: center; margin-bottom: 2.5rem">
+          Common <em>questions</em>
+        </h2>
+        <div class="faqs" id="faqs"></div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <div class="container">
+      <div class="cta">
+        <h2>Ready to trade the future?</h2>
+        <p>
+          Join hundreds of thousands of traders putting real money on real
+          outcomes.
+        </p>
+        <div class="cta-btns">
+          <a
+            href="https://polymarket.com"
+            target="_blank"
+            rel="noopener"
+            class="btn-light"
+          >
+            Open Polymarket
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M2 10L10 2M10 2H4M10 2V8"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://polymarket.com/learn"
+            target="_blank"
+            rel="noopener"
+            class="btn-outline-light"
+            >Read the docs</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <p>
+          This is an independent informational page and is not affiliated with
+          Polymarket. &nbsp;·&nbsp;
+          <a href="https://polymarket.com" target="_blank">polymarket.com</a>
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      const MARKETS = [
+        {
+          cat: "politics",
+          q: "Will there be a US presidential election in 2028?",
+          prob: 96,
+          vol: "$2.1M",
+          color: "var(--accent)",
+        },
+        {
+          cat: "politics",
+          q: "Will NATO expand its eastern flank before 2026?",
+          prob: 44,
+          vol: "$3.8M",
+          color: "var(--accent)",
+        },
+        {
+          cat: "politics",
+          q: "Will Emmanuel Macron resign in 2025?",
+          prob: 12,
+          vol: "$1.2M",
+          color: "var(--accent)",
+        },
+        {
+          cat: "economics",
+          q: "Will the Fed cut rates before July 2025?",
+          prob: 61,
+          vol: "$14.2M",
+          color: "var(--blue)",
+        },
+        {
+          cat: "economics",
+          q: "Will US inflation exceed 4% in 2025?",
+          prob: 28,
+          vol: "$5.6M",
+          color: "var(--blue)",
+        },
+        {
+          cat: "economics",
+          q: "Will a G7 country enter recession in 2025?",
+          prob: 55,
+          vol: "$7.3M",
+          color: "var(--blue)",
+        },
+        {
+          cat: "tech",
+          q: "Will GPT-5 launch before end of 2025?",
+          prob: 52,
+          vol: "$3.4M",
+          color: "var(--accent2)",
+        },
+        {
+          cat: "tech",
+          q: "Will Apple release spatial computing glasses?",
+          prob: 29,
+          vol: "$2.1M",
+          color: "var(--accent2)",
+        },
+        {
+          cat: "tech",
+          q: "Will AGI be announced by a major lab in 2025?",
+          prob: 8,
+          vol: "$4.9M",
+          color: "var(--accent2)",
+        },
+        {
+          cat: "crypto",
+          q: "Will Bitcoin reach $150K in 2025?",
+          prob: 41,
+          vol: "$22.1M",
+          color: "var(--amber)",
+        },
+        {
+          cat: "crypto",
+          q: "Will Ethereum flip Bitcoin by market cap?",
+          prob: 11,
+          vol: "$6.2M",
+          color: "var(--amber)",
+        },
+        {
+          cat: "crypto",
+          q: "Will a spot Ethereum ETF launch in the US?",
+          prob: 78,
+          vol: "$9.4M",
+          color: "var(--amber)",
+        },
+        {
+          cat: "science",
+          q: "Will a bird flu pandemic be declared in 2025?",
+          prob: 14,
+          vol: "$2.8M",
+          color: "var(--accent)",
+        },
+        {
+          cat: "science",
+          q: "Will a new exoplanet with biosignatures be confirmed?",
+          prob: 7,
+          vol: "$1.1M",
+          color: "var(--accent)",
+        },
+        {
+          cat: "science",
+          q: "Will nuclear fusion achieve net energy gain publicly?",
+          prob: 18,
+          vol: "$3.3M",
+          color: "var(--accent)",
+        },
+      ];
+
+      function renderMarkets(cat) {
+        const grid = document.getElementById("mkt-grid");
+        const list =
+          cat === "all" ? MARKETS : MARKETS.filter((m) => m.cat === cat);
+        grid.innerHTML = list
+          .map(
+            (m) => `
+    <div class="mcard">
+      <div class="mcard-cat">${m.cat}</div>
+      <div class="mcard-q">${m.q}</div>
+      <div class="mcard-bar"><div class="mcard-fill" style="width:${m.prob}%;background:${m.color}"></div></div>
+      <div class="mcard-footer">
+        <span class="mcard-prob" style="color:${m.color}">${m.prob}% Yes</span>
+        <span class="mcard-vol">${m.vol} vol</span>
+      </div>
+    </div>`,
+          )
+          .join("");
+      }
+      renderMarkets("all");
+
+      document.getElementById("tabs").addEventListener("click", (e) => {
+        const t = e.target.closest(".tab");
+        if (!t) return;
+        document
+          .querySelectorAll(".tab")
+          .forEach((x) => x.classList.remove("active"));
+        t.classList.add("active");
+        renderMarkets(t.dataset.cat);
+      });
+
+      const FAQS = [
+        {
+          q: "Is Polymarket legal?",
+          a: "Polymarket operates in a legal grey area in the US and has restricted American users since 2022 following an SEC settlement. It is accessible in most other countries. Always check your local laws before trading.",
+        },
+        {
+          q: "What currency do I use to trade?",
+          a: "All trades are settled in USDC — a USD-pegged stablecoin on the Polygon blockchain. You can deposit USDC directly or convert from other crypto. Fiat on-ramps are available via credit card through third-party providers.",
+        },
+        {
+          q: "Who decides how markets resolve?",
+          a: "Markets are resolved using UMA's optimistic oracle. A proposed resolution is posted; if undisputed after a 48-hour window, it finalises. If disputed, UMA token holders vote to decide the outcome.",
+        },
+        {
+          q: "Can I lose all my money?",
+          a: "Yes. If you buy shares in an outcome that doesn't happen, your shares expire worthless at $0. Only invest what you can afford to lose completely.",
+        },
+        {
+          q: "How accurate are Polymarket predictions?",
+          a: "Remarkably accurate over large sample sizes. Polymarket's 2024 US election predictions tracked far closer to the final result than most major polling aggregators. The mechanism of real financial stakes incentivises genuine research.",
+        },
+        {
+          q: "What fees does Polymarket charge?",
+          a: "There is no deposit or withdrawal fee. Polymarket takes a 2% fee on winnings (not losses). Polygon network gas fees are typically fractions of a cent per transaction.",
+        },
+        {
+          q: "Do I need a crypto wallet?",
+          a: "You can sign up with just an email — Polymarket will create a wallet for you. Advanced users can connect MetaMask, WalletConnect, or other external wallets for full custody.",
+        },
+      ];
+
+      const faqsEl = document.getElementById("faqs");
+      faqsEl.innerHTML = FAQS.map(
+        (f, i) => `
+  <div class="faq" data-i="${i}">
+    <div class="faq-q">${f.q}<span class="faq-icon">+</span></div>
+    <div class="faq-a">${f.a}</div>
+  </div>`,
+      ).join("");
+
+      faqsEl.addEventListener("click", (e) => {
+        const faq = e.target.closest(".faq");
+        if (!faq) return;
+        const isOpen = faq.classList.contains("open");
+        document
+          .querySelectorAll(".faq")
+          .forEach((x) => x.classList.remove("open"));
+        if (!isOpen) faq.classList.add("open");
+      });
+
+      // scroll reveal
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.style.opacity = 1;
+              e.target.style.transform = "none";
+            }
+          });
+        },
+        { threshold: 0.1 },
+      );
+      document.querySelectorAll(".feat,.step,.mcard").forEach((el) => {
+        el.style.opacity = 0;
+        el.style.transform = "translateY(14px)";
+        el.style.transition = "opacity .5s ease, transform .5s ease";
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
